@@ -1,0 +1,23 @@
+Target: KIC11026764
+Test Info: test after rm fail
+
+
+fmin = 500
+fmax = 1300
+
+Stellar settings:
+    Only radial fitted: False
+    Fitting rotaitonal split: True
+    Fitting mixed modes: True
+    An F-like star fit: False
+    Background fit: True
+    #background components: 2
+
+Results directory: PB_results_KIC11026764_2024-06-12_09-28-46
+Parallelization: True
+Dimensions (# of parameters): 137
+
+Walkers: 500
+# of steps/iterations: 2000
+# of steps discarded from the beginning of the chain: 500
+Run time: 1.654511453575558 hours.

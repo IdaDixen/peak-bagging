@@ -1,0 +1,23 @@
+Target: TIC459978312
+Test Info: test after rm fail
+
+
+fmin = 60
+fmax = 160
+
+Stellar settings:
+    Only radial fitted: False
+    Fitting rotaitonal split: False
+    Fitting mixed modes: False
+    An F-like star fit: False
+    Background fit: True
+    #background components: 3
+
+Results directory: PB_results_TIC459978312_2024-06-12_00-32-36
+Parallelization: True
+Dimensions (# of parameters): 39
+
+Walkers: 500
+# of steps/iterations: 2000
+# of steps discarded from the beginning of the chain: 500
+Run time: 10.256117701530457 min.
