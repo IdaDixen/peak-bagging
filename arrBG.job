@@ -1,0 +1,66 @@
+#!/bin/bash
+
+#SBATCH --job-name=BG_alt2comp_q64_arrJob
+#SBATCH --time=02:00:00
+#SBATCH --partition=q64
+#SBATCH --nodes=1
+#SBATCH --mem=0
+#SBATCH --exclusive
+#SBATCH --export=NONE
+#SBATCH --signal=B:SIGUSR2@300
+#SBATCH --array=5
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Init block: Signal when walltime is near
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Using #SBATCH to send signal (details in "create_input.py")
+# Define a function to execute and then catch the signal
+timesup() {
+    echo
+    echo "Oh no! I am approaching the time limit ..."
+#    echo "I will NOT retrieve all existing obs-files it is too late!"
+}
+
+trap  "timesup"  SIGUSR2
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Main block
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+echo "========= Job started  at `date` on `hostname -s` =========="
+echo "Job id       : $SLURM_JOB_ID"
+
+# Go to the directory where this job was submitted
+cd $SLURM_SUBMIT_DIR
+
+# copy input data and program to the scratch-directory
+cp -r ../MyFunctions_v6 /scratch/$SLURM_JOB_ID/
+cp ../run_bg_fit.py /scratch/$SLURM_JOB_ID/
+
+# change directory to local scratch-directory
+cd /scratch/$SLURM_JOB_ID
+mv MyFunctions_v6 MyFunctions
+
+# Activate the virtual environment
+source ~/venvs/PB_env/bin/activate
+
+# set number of components in the bacground fit
+k=2
+
+# run program
+echo "Starting background fitting"
+
+python run_bg_fit.py $SLURM_ARRAY_TASK_ID $k
+
+wait $!
+
+# copy slurm .out file to Results folder
+cp $SLURM_SUBMIT_DIR/slurm-*_$SLURM_ARRAY_TASK_ID.out ./BG_results_*
+
+# copy results to the directory from which it was submitted
+mv BG_sampler.h5 BG_results_*/
+rsync -aqr ./BG_results_* $SLURM_SUBMIT_DIR
+
+
+
+echo "========= Job finished at `date` =========="
+#
