@@ -8,7 +8,7 @@
 #SBATCH --exclusive
 #SBATCH --export=NONE
 #SBATCH --signal=B:SIGUSR2@300
-#SBATCH --array=3-5
+#SBATCH --array=0-5
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Init block: Signal when walltime is near
@@ -18,7 +18,6 @@
 timesup() {
     echo
     echo "Oh no! I am approaching the time limit ..."
-#    echo "I will NOT retrieve all existing obs-files it is too late!"
 }
 
 trap  "timesup"  SIGUSR2
@@ -35,7 +34,6 @@ cd $SLURM_SUBMIT_DIR
 # copy input data and program to the scratch-directory
 cp -r MyFunctions /scratch/$SLURM_JOB_ID/
 cp run_peakbagging.py /scratch/$SLURM_JOB_ID/
-#cp ../run_fit_bg.py /scratch/$SLURM_JOB_ID/
 
 # change directory to local scratch-directory
 cd /scratch/$SLURM_JOB_ID

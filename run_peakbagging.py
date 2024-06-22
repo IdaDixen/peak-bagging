@@ -18,7 +18,7 @@ Created on Sat Nov 4 09:55:40 2023
 PREREQUISITS
 
 Before run, make sure the following is changed to fit the run:
-    -> target
+    -> target (if not on Grendel)
     -> test_info
 If another filetype is needed, change pdsfile
 
@@ -29,13 +29,18 @@ Other settingd to consider:
     -> mCPU
     -> only_radial
     -> fit_bg
+    -> fit_split
+    -> mixed_modes
+    -> F-like
+    -> simple_guess
 
 Target info must be contained in: myF.get_target_info(target)
-Morover the following files are needed: (EDIT)
-    -> Modes ('l0.csv', 'l1.csv' ,'l2.csv', 'l3.csv' is accepted)
-    -> 'theta_init.csv' including uncertainties to make Gaussian ball to 
-        radnomize walker positions
-    -> 'priors.csv'
+Morover the following files are needed: (have to be stored in MyFunctions folder)
+    -> Modes (Folder with modes_{}{}.csv'.format(InputCatalog, ID) is accepted)
+    -> 'theta_init/theta_init.csv' including uncertainties (in separate uncertainties/ folder) 
+        to make Gaussian ball to radnomize walker positions
+    -> theta_init/BG_BestFitResults_{}{}.txt'.format(InputCatalog, ID)
+    -> Find_peaks/'Dnus.csv'
     
 If the model is changed, remember to change priors, theta_init and unc as well
 
@@ -44,11 +49,7 @@ If the model is changed, remember to change priors, theta_init and unc as well
 """
 
 
-
-
-
 import numpy as np
-from astropy.io import ascii
 from astropy.table import Table
 import matplotlib.pyplot as plt
 import matplotlib
@@ -136,7 +137,7 @@ Dnu = myF.get_Dnu(target)
 
 
 
-#%%
+
 #####  Initial guesses  #####
 print('Defining intial parameter guess')
 
@@ -218,7 +219,7 @@ if not simple_geuss:
         fig.savefig(res_dir+'/A_Gamma_init.png', dpi=300)
    
 
-#%%
+
 ####################################################################
 
 # add nu, A and gamma guess' and unc
@@ -338,7 +339,7 @@ else:
 
 
 
-#%%
+
 
 #####  MCMC sampling #####
 

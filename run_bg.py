@@ -22,6 +22,7 @@ PREREQUISITS
 Before run, make sure the following is changed to fit the run:
     -> target_indx
     -> test_info
+    -> k (if not on Grendel)
 If another filetype is needed, change pdsfile
 
 Other settingd to consider:
@@ -107,8 +108,6 @@ pd = data[:,1]
 #####  Initial guesses  #####
 
 print('Defining intial parameter guess')
-# nu_max, A_max, sigma_env, sigma_k, ..., tau_k, ..., W
-# (xi_k, ..., c_k) is const
 
 Gauss_guess = ascii.read('MyFunctions/theta_init/gauss_P.csv')
 numax = Gauss_guess['numax'][target_indx]

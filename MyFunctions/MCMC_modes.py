@@ -289,43 +289,6 @@ def interpolate_modes(modes, nu_nl, A_nl, Gamma_nl, l_min, plot=False):#, res_di
         
         labs = [l.get_label() for l in lns]
         ax1.legend(lns, labs, loc='upper left')
-
-        # fig_int, ax1 = plt.subplots(1, 1, figsize=(7,4))
-        # ax2 = ax1.twinx()
-        # plt.subplots_adjust(top=0.92,
-        #                     bottom=0.125,
-        #                     left=0.1,
-        #                     right=0.8,
-        #                     hspace=0.5,
-        #                     wspace=0.2)
-        # 
-        # lns1 = ax1.plot(nu_nl, A_nl, '.-', linewidth=.3, 
-        #                 label=r'$A_{nl}$')
-        # lns3 = ax1.plot(nu_fit, A_fit, 'k*', label=r'$fitted$')
-        # ax1.set_xlabel(r'$\nu$ [$\mu$Hz]')
-        # ax1.set_ylabel(r'$A$ [ppm]')
-
-        # lns2 = ax2.semilogy(nu_nl, Gamma_nl, 'r.-', linewidth=.3,
-        #                     label=r'$\Gamma_{nl}$')
-        # 
-        # ax2.semilogy(nu_fit, Gamma_fit, 'k*', label=r'$Fitted$')
-        # ax2.set_ylabel(r'$\Gamma$ [$\mu$Hz]')
-        # #ax2.yaxis.set_minor_formatter(ScalarFormatter())
-
-        # lns = lns1+lns2+lns3
-        # labs = [l.get_label() for l in lns]
-        # ax1.legend(lns, labs, loc='upper left')
-        # 
-        # # import matplotlib.ticker as ticker
-
-        # # ax2.yaxis.set_major_formatter(ticker.FuncFormatter(lambda y,pos: ('{{:.{:1d}f}}'.format(int(np.maximum(-np.log10(y),0)))).format(y)))
-        # 
-        # # formatter = ScalarFormatter()
-        # # formatter.set_scientific(False)
-        # # ax2.set_major_formatter(formatter)
-        # # plt.show()
-        # 
-        # #plt.close(fig_int)
     
     return A_nl, Gamma_nl
 
@@ -659,8 +622,6 @@ def log_prior(theta, nu, pd, target, modes, theta_init, bg_k,
     
     for A_nl, A_init in zip(A_nl_all, A_nl_inits):        
         indx += 1
-        # lp += mod_Jeffreys_prior(A_nl, 0.001, 100, A_init)
-        #lp += mod_Jeffreys_prior(A_nl, 0, np.sqrt(max(pd)), A_init)
         lp += mod_Jeffreys_prior(A_nl**2, 0, max(pd), A_init**2)
         if abs(lp) == np.inf:
             print('{} is inf'.format(labels[indx]))
@@ -729,8 +690,6 @@ def log_prior(theta, nu, pd, target, modes, theta_init, bg_k,
                 
                 #inclination
                 indx += 1
-                # lp += uniform_prior(i, -180, 90)
-                # lp += uniform_prior(i, -np.pi/2, np.pi)
                 lp += uniform_prior(i, 0, 1.5)
                 if abs(lp) == np.inf:
                     # print('in i')
@@ -763,8 +722,6 @@ def log_prior(theta, nu, pd, target, modes, theta_init, bg_k,
                 
                 #inclination
                 indx += 1
-                # lp += uniform_prior(i, -180, 90)
-                # lp += uniform_prior(i, -np.pi/2, np.pi)
                 lp += uniform_prior(i, 0, 1.5)
                 if abs(lp) == np.inf:
                     print('{} is inf'.format(labels[indx]))
@@ -854,8 +811,6 @@ def run_emcee(ndim, nwalkers, steps, p0, nu, pd, target, modes, theta_init,
         
         loop_count = 0
         while err_indx < 1000:
-            # print(p[err_indx])
-            # print(p_mean[err_indx])
             p[err_indx] = p_mean[err_indx]
             print(p[err_indx])
             print('now changed')
@@ -976,8 +931,6 @@ def params_estimation(nu, pd, target, modes, steps, theta_init, unc, info_file,
     p0 = theta_init+perturb
     
     # plot walker distribution
-    #InputCatalog, ID, name, _, _, _, _, _ = myF.get_target_info(target)
-    
     for i, lab in enumerate(labels):
         fig, ax = plt.subplots(1, 1, figsize=(7,5))
         plt.subplots_adjust(top=0.92,
@@ -997,7 +950,6 @@ def params_estimation(nu, pd, target, modes, steps, theta_init, unc, info_file,
         plt.xlabel(lab+' (relevant units)')
         plt.ylabel('Counts')
         
-        #fig.suptitle('{} {} ({})'.format(InputCatalog, ID, name))
         ax.text(1, 1, name, transform=ax.transAxes,
             va='bottom', ha='right', fontsize=10)
             
