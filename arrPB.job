@@ -1,0 +1,63 @@
+#!/bin/bash
+
+#SBATCH --job-name=PB
+#SBATCH --time=02:00:00
+#SBATCH --partition=q64
+#SBATCH --nodes=1
+#SBATCH --mem=0
+#SBATCH --exclusive
+#SBATCH --export=NONE
+#SBATCH --signal=B:SIGUSR2@300
+#SBATCH --array=3-5
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Init block: Signal when walltime is near
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Using #SBATCH to send signal (details in "create_input.py")
+# Define a function to execute and then catch the signal
+timesup() {
+    echo
+    echo "Oh no! I am approaching the time limit ..."
+#    echo "I will NOT retrieve all existing obs-files it is too late!"
+}
+
+trap  "timesup"  SIGUSR2
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Main block
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+echo "========= Job started  at `date` on `hostname -s` =========="
+echo "Job id       : $SLURM_JOB_ID"
+
+# Go to the directory where this job was submitted
+cd $SLURM_SUBMIT_DIR
+
+# copy input data and program to the scratch-directory
+cp -r MyFunctions /scratch/$SLURM_JOB_ID/
+cp run_peakbagging.py /scratch/$SLURM_JOB_ID/
+#cp ../run_fit_bg.py /scratch/$SLURM_JOB_ID/
+
+# change directory to local scratch-directory
+cd /scratch/$SLURM_JOB_ID
+
+# Activate the virtual environment
+source ~/venvs/PB_env/bin/activate
+
+# run program
+echo "Starting background fitting"
+
+python run_peakbagging.py $SLURM_ARRAY_TASK_ID
+
+wait $!
+
+# copy slurm .out file to Results folder
+cp $SLURM_SUBMIT_DIR/slurm-*_$SLURM_ARRAY_TASK_ID.out ./PB_results_*
+
+# copy results to the directory from which it was submitted
+mv PB_sampler.h5 PB_results_*/
+rsync -aqr ./PB_results_* $SLURM_SUBMIT_DIR
+
+
+
+echo "========= Job finished at `date` =========="
+#
